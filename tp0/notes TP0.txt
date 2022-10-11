@@ -19,13 +19,17 @@ OUTPUT_ARCH indique le cpu à utiliser (mode protégé et 32bits ici)
 pour trouver l'entry point : grep -nr entry ../kernel
 bootloader donne le point d'entry -> on jump là 
 
-PHDR qu'est ce qu'il faut copier et avec quels attributs (on voit avec readelf)
+PHDR = program header = qu'est ce qu'il faut copier et avec quels attributs (on voit avec readelf)
+Les FLAGS indiquent les droits rwx
+padding = nop / 0xcacaca
+
+ex section : 
+.mbh : {} : .phboot <- ça ça indique où on le met dans quel header
 
 
 QUESTIONS :
 
-1) Pourquoi le noyau indique 0x302010 et pas 0x300000 comme adresse de début ? Indice: essayer de comprendre linker.lds, regardez également le code de "entry.s"
--> 0x300000 - 0x3002010
--> 0x2000 pour le stack et 0x10 pour mbh
+1) 0x300000 - 0x3002010
+   0x2000 pour le stack et 0x10 pour mbh
 
-2) A l'aide de la structure "multiboot_info", vous devez afficher la cartographie mémoire de la VM. Pour cela, utilisez les champs mmap_addr et mmap_length. Aidez-vous d'internet pour trouver des informations sur le standard multiboot. Le champ mmap_addr contient l'adresse du premier objet de type multiboot_memory_map qui vous permettra d'afficher des informations sur la mémoire.
+2) 
