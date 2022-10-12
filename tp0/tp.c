@@ -31,7 +31,7 @@ void tp() {
    // Erreur donc readOnly
 
    // RAM = 128Mb = 0x80, on écrit un peu après à 0x90
-   int * pmem = (int*) 0x300090;
+   int pmem = (int*) 0x8000000;
    debug("Valeur %d\n", *pmem);
    // Lecture OK
    *pmem = 3;
