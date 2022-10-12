@@ -26,10 +26,11 @@ padding = nop / 0xcacaca
 ex section : 
 .mbh : {} : .phboot <- ça ça indique où on le met dans quel header
 
-
 QUESTIONS :
 
-1) 0x300000 - 0x3002010
+1) 0x300000 - 0x302010
    0x2000 pour le stack et 0x10 pour mbh
 
-2) 
+2) Cartographie si on on execute tp.c -> on voit que y'a des trous
+3) Ca a l'air d'aller en lecture mais pas en écriture (readonly?
+4) On a l'air de pouvoir lire et écrire dans la RAM
