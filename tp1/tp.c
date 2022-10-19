@@ -9,4 +9,5 @@ extern info_t *info;
 void tp(){
     gdt_reg_t * gdt;
     get_gdtr(gdt);
+    debug("addr : %x\n",gdt->desc->type);
 }
