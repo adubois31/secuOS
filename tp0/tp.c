@@ -20,22 +20,19 @@ void tp() {
       start ++;
    }
 
-   // Lecture à un emplacement mémoire
+   // Lecture à un emplacement mémoire valide: et qui marche bien
    int * pmem = (int*) 0x9fc00;
    debug("Valeur %d\n", *pmem);
-   // Marche bien
-
-   // Ecriture à l'emplacement
+   
    *pmem = 3;
    debug("Valeur %d\n", *pmem);
-   // Erreur donc readOnly
 
    // RAM = 128Mb = 0x80, on écrit un peu après à 0x90
-   int pmem = (int*) 0x8000000;
+   pmem = (int*) 0x8000000;
    debug("Valeur %d\n", *pmem);
-   // Lecture OK
+   // Lecture: pas d'erreur
    *pmem = 3;
    debug("Valeur %d\n", *pmem);
-   // Ecriture OK
+   // On retourne 0 donc on voit qu'on ne peut pas écrire
 
 }
