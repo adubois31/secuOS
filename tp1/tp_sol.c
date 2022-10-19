@@ -118,23 +118,23 @@ void tp() {
   memset(src, 0xff, 64);
 
   uint32_t base = 0x00600000;
-  seg_desc_t *new_desc;
-  new_desc->limit_1 = 0x1f;
-  new_desc->base_1 = base & 0x0000ffff;
-  new_desc->base_2 = (base & 0x000f0000) >> 16;
-  new_desc->type = SEG_DESC_DATA_RW;
-  new_desc->s = 1;
-  new_desc->dpl = 0;
-  new_desc->p = 1;
-  new_desc->limit_2 = 0x0;
-  new_desc->avl = 0;
-  new_desc->l = 0;
-  new_desc->d = 1;
-  new_desc->g = 1;
-  new_desc->base_3 = (base & 0x00f00000) >> 24;
+  //seg_desc_t *new_desc = 0x0;
+  new_table->limit_1 = 0x1f;
+  new_table->base_1 = base & 0x0000ffff;
+  new_table->base_2 = (base & 0x000f0000) >> 16;
+  new_table->type = SEG_DESC_DATA_RW;
+  new_table->s = 1;
+  new_table->dpl = 0;
+  new_table->p = 1;
+  new_table->limit_2 = 0x0;
+  new_table->avl = 0;
+  new_table->l = 0;
+  new_table->d = 1;
+  new_table->g = 1;
+  new_table->base_3 = (base & 0x00f00000) >> 24;
 
   seg_sel_t ds;
-  set_es(new_desc);
+  set_es(new_table);
 
   _memcpy8(dst, src, 32);
 }
