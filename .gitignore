@@ -8,3 +8,5 @@
 *.map
 *.patch
 !.gitignore
+secos-sol.zip
+slides_corrections_secos.pdf
