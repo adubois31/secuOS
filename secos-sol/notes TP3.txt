@@ -1,0 +1,31 @@
+De base on est en ring0 -> faut faire manip (interrup) pour passer en ring3
+Modif le ring : champ DPL dans gdt
+-> pour tester on écrit dans cr0 -> or on aura pas le droit si on a ring > 0
+
+màj DS ED FS GS trivial
+màj SS / CS avec un MOV pète un câble -> erreur
+    -> (il lui faut un farjump ?)
+TSS = table/zone en mémoire (task switch segment) sert à changer de niveau de privilège
+
+CODE : 
+
+    TSS.s0.esp = get_ebp()
+    TSS.s0.ss = d0.sel;
+
+    tss_dsc(..
+    ...
+
+    asm volatile(
+        "push %0 \n"    // ss
+        "push %%ebp \n" // esp
+        "pushf \n"      // eflags
+        "push %1 \n"    // cs
+        "push %2 \n"    // eip
+        "iret \n"      
+        ::
+        "i"(d3_sel),    //ss
+        "i"(c3_sel),    //cs
+        "r"(&userland) //eip
+    )
+
+interruption qui permet de changer le niveau du ring (trick sale)

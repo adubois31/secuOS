@@ -1,0 +1,13 @@
+CR3 contient @ PGD
+PGD -> PTB -> @Phy
+
+PGD = 4Mo 
+On la morcèle ou non en fonction taille qu'on veut
+
+Pour exam y'a SHM :
+2 applis ring 3 qui vont partager un de leur emplacement mémoire
+1 écrit et 1 lit
+Chacun à un CR3 diff
+Mais chacun aura un de leur PTB qui pointera au même endroit que l'autre
+
+attention à flush le cache quand on change les @ (ou active pagination?)

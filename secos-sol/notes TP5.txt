@@ -1,0 +1,2 @@
+implémentation d'un appel système
+si pas d'entrée dans idt -> alors 0 par défaut -> DPL à 0 -> #GP

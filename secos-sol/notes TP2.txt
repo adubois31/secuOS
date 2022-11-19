@@ -1,0 +1,25 @@
+idt c'est un tableau de descripteur d'interruption (contient fonction en elle même
+idt.s -> y'a .idt_jmp (= une section où y'a tous les func du idt)
+Interruption 14 -> empilement de EFLAGS, CS, EIP, Error Code (@ qui a généré ou autre en fonction du type interrup (par ex div par 0 pas besoin d'error code))
+                (changement de niveau -> empile ESP et SS en plus)
+                -> indice 14 de idt -> @ func à executer
+                -> re-dépiler les premiers trucs
+    (mais secOS plus malin donc empile le numéro d'erreur et call intr_handler(isr) si l'interruption s'y prête)
+
+OS Doit : 
+- Implémenter le handler interruption
+- Les reférencer correctement dans l'idt 
+- Config le registre idtr pour qu'il pointe bien sur la tableau (ou écrire tab direct à @ pointé par idtr)
+(NMI PF BP déjà implémenté dans secos, le reste à faire soit même)
+
+3 interruptions non traités => reboot OS
+
+isr = offset pour aller dans le tableau
+code assembleur des interruptions push un numéro d'interrup dans la pile
+
+quand on fait un handler il faut un iret (exprès pour les interruptions)
+faut pas oublier le "leave" (réaligne le pointeur sur qq chose aligné)
+
+si on fait ret alors ça va dépiler les mauvaises informations / chercher mauvais endroit
+
+Pour le gros tp faudra écrire les handler en asm
