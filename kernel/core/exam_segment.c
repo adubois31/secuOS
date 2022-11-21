@@ -48,7 +48,7 @@ seg_desc_t create_dsc_flat(uint64_t type, uint64_t dpl)
   return seg;
 }
 
-seg_desc_t create_dsc_tss(uint64_t limit, uint64_t base)
+seg_desc_t create_dsc_tss(uint64_t base,uint64_t limit)
 {
   seg_desc_t seg;
   
@@ -69,8 +69,9 @@ void init_gdt()
 {
   gdt_reg_t gdtr;
 
-  // Création de notre propre table gdt
-  seg_desc_t * GDT = (seg_desc_t *)0x0; // -------- A CHANGER QUAND ON AURA DECIDE DES @
+  // Initialisation GDT et TSS
+  seg_desc_t * GDT  = (seg_desc_t *)address_GDT;
+  tss_t * TSS       = (tss_t*) address_TSS;
 
   // Segment vide rempli de 0, indice 0
   for (uint32_t i = 0; i < sizeof(seg_desc_t); i++)
@@ -87,14 +88,20 @@ void init_gdt()
   GDT[4] = create_dsc_flat(SEG_DESC_DATA_RW, 3);
 
   // TSS (pas sûr de moi)
-  GDT[5] = create_dsc_tss(0xfffff, 0x0); // -------- SANS DOUTE A CHANGER
+  GDT[5] = create_dsc_tss((void*)address_TSS, 0xfffff); // -------- SANS DOUTE A CHANGER
+  memset((void*)address_TSS, 0, sizeof(tss_t));
+
+  TSS->s0.esp = get_ebp();
+  TSS->s0.ss  = d0_sel;
+  set_tr(ts_sel);
 
   // Validation
   gdtr.desc  = GDT;
-  gdtr.limit = 6 * sizeof(seg_desc_t) - 1; // ------ CHANGER PEUT ETRE PLUS TARD 
+  gdtr.limit = 6 * sizeof(seg_desc_t) - 1; 
   set_gdtr(gdtr);
 
   set_cs(c0_sel); // -------- SANS DOUTE A CHANGER
+  
   set_ss(d0_sel);
   set_ds(d0_sel);
   set_es(d0_sel);
