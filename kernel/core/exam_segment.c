@@ -4,8 +4,11 @@
 
 extern info_t *info;
 
-void display_gdt(gdt_reg_t *gdtr)
+void display_gdt(void)
 {
+  gdt_reg_t * gdtr = NULL;
+  get_gdtr(*gdtr);
+
   int i = 0;
   seg_desc_t *begin;
   begin = (seg_desc_t *)gdtr->desc;
@@ -88,7 +91,7 @@ void init_gdt()
   GDT[4] = create_dsc_flat(SEG_DESC_DATA_RW, 3);
 
   // TSS (pas sûr de moi)
-  GDT[5] = create_dsc_tss((void*)address_TSS, 0xfffff); // -------- SANS DOUTE A CHANGER
+  GDT[5] = create_dsc_tss(address_TSS, 0xfffff); // -------- SANS DOUTE A CHANGER
   memset((void*)address_TSS, 0, sizeof(tss_t));
 
   TSS->s0.esp = get_ebp();
