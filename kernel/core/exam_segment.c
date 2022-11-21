@@ -6,13 +6,13 @@ extern info_t *info;
 
 void display_gdt(void)
 {
-  gdt_reg_t * gdtr = NULL;
-  get_gdtr(*gdtr);
+  gdt_reg_t gdtr;
+  get_gdtr(gdtr);
 
   int i = 0;
   seg_desc_t *begin;
-  begin = (seg_desc_t *)gdtr->desc;
-  while (begin <= (seg_desc_t *)gdtr->desc + gdtr->limit / sizeof(seg_desc_t))
+  begin = (seg_desc_t *)gdtr.desc;
+  while ((uint32_t)begin <= (gdtr.limit + 1) / sizeof(seg_desc_t))
   {
     uint32_t addr = (begin->base_1) | (begin->base_2 << 16) | (begin->base_3 << 24);
     uint32_t lim = (begin->limit_1) | (begin->limit_2 << 16);
@@ -22,12 +22,12 @@ void display_gdt(void)
       lim *= 4096;
       lim -= 1;
     }
-    if (begin->p)
-    {
-      printf(
-          "Segment %d : Adresse : [0x%x - 0x%x] : Type de descripteur: %d\n\n",
-          i, addr, lim, begin->type);
-    }
+    // if (begin->p)
+    //{
+    debug(
+        "Segment %d : Adresse : [0x%x - 0x%x] : Type de descripteur: %d\n\n",
+        i, addr, lim, begin->type);
+    //}
     begin++;
     i++;
   }
@@ -51,30 +51,31 @@ seg_desc_t create_dsc_flat(uint64_t type, uint64_t dpl)
   return seg;
 }
 
-seg_desc_t create_dsc_tss(uint64_t base,uint64_t limit)
+seg_desc_t create_dsc_tss(uint64_t base, uint64_t limit)
 {
   seg_desc_t seg;
-  
+
   seg.limit_1 = limit;
   seg.limit_2 = (limit >> 2 * 8);
 
-  seg.base_1  = base;
-  seg.base_2  = (base >> 2 * 8);
-  seg.base_3  = (base >> 3 * 8);
+  seg.base_1 = base;
+  seg.base_2 = (base >> 2 * 8);
+  seg.base_3 = (base >> 3 * 8);
 
-  seg.type   = SEG_DESC_SYS_TSS_AVL_32;         
-  seg.p      = 1; 
+  seg.type = SEG_DESC_SYS_TSS_AVL_32;
+  seg.p = 1;
 
   return seg;
 }
 
 void init_gdt()
 {
+  debug("Commencement init\n");
   gdt_reg_t gdtr;
-
+  get_gdtr(gdtr);
   // Initialisation GDT et TSS
-  seg_desc_t * GDT  = (seg_desc_t *)address_GDT;
-  tss_t * TSS       = (tss_t*) address_TSS;
+  seg_desc_t *GDT = (seg_desc_t *)address_GDT;
+  // tss_t *TSS = (tss_t *)address_TSS;
 
   // Segment vide rempli de 0, indice 0
   for (uint32_t i = 0; i < sizeof(seg_desc_t); i++)
@@ -84,7 +85,9 @@ void init_gdt()
 
   // Kernel
   GDT[1] = create_dsc_flat(SEG_DESC_CODE_XR, 1);
+  debug("Adress de GDT[1] : %p\n", &GDT[1]);
   GDT[2] = create_dsc_flat(SEG_DESC_DATA_RW, 1);
+  debug("Adress de GDT[2] : %p\n", &GDT[2]);
 
   // User
   GDT[3] = create_dsc_flat(SEG_DESC_CODE_XR, 3);
@@ -92,22 +95,26 @@ void init_gdt()
 
   // TSS (pas sûr de moi)
   GDT[5] = create_dsc_tss(address_TSS, 0xfffff); // -------- SANS DOUTE A CHANGER
-  memset((void*)address_TSS, 0, sizeof(tss_t));
+  debug("Avant memset\n");
+  memset((void *)address_TSS, 0, sizeof(tss_t));
+  debug("Après memset\n");
 
-  TSS->s0.esp = get_ebp();
-  TSS->s0.ss  = d0_sel;
-  set_tr(ts_sel);
+  /*TSS->s0.esp = get_ebp();
+  TSS->s0.ss = d0_sel;
+  set_tr(ts_sel); // <----- PROBLEME ICI!!!*/
+  debug("C'est bon\n");
 
   // Validation
-  gdtr.desc  = GDT;
-  gdtr.limit = 6 * sizeof(seg_desc_t) - 1; 
+  gdtr.desc = GDT;
+  gdtr.limit = 6 * sizeof(seg_desc_t) - 1;
   set_gdtr(gdtr);
 
   set_cs(c0_sel); // -------- SANS DOUTE A CHANGER
-  
+
   set_ss(d0_sel);
   set_ds(d0_sel);
   set_es(d0_sel);
   set_fs(d0_sel);
   set_gs(d0_sel);
+  debug("Fin init\n");
 }
