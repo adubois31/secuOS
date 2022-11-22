@@ -51,7 +51,7 @@ void init_gdt()
 {
    gdt_reg_t gdtr;
 
-   GDT[0].raw = 0ULL;
+   GDT[0].raw = NULL;
 
    c0_dsc( &GDT[c0_idx] );
    d0_dsc( &GDT[d0_idx] );
