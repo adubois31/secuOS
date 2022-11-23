@@ -3,6 +3,7 @@
 #include <info.h>
 
 #include <exam_segment.h>
+#include <exam_page.h>
 
 extern info_t *info;
 extern uint32_t __kernel_start__;
@@ -31,4 +32,9 @@ void tp()
     init_gdt();
     debug("---Display GDT---\n");
     display_gdt();
+
+    debug("---Show CR3---\n");
+    show_cr3();
+    debug("---Initialisation Pages---\n");
+    identity_init();
 }
