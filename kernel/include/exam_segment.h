@@ -16,12 +16,10 @@
 #define d3_sel  gdt_usr_seg_sel(d3_idx)
 #define ts_sel  gdt_krn_seg_sel(ts_idx)
 
-#define address_GDT 0x10000
-#define address_TSS 0x400000
+// #define address_GDT 0x10000
+// #define address_TSS 0x400000
 
-// void display_gdt(void);
-// seg_desc_t create_dsc_flat(uint64_t type, uint64_t dpl);
-// seg_desc_t create_dsc_tss(uint64_t base,uint64_t limit);
+void display_gdt(void);
 void init_gdt();
 
 #endif

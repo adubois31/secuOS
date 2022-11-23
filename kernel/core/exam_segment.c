@@ -1,12 +1,12 @@
 /* GPLv2 (c) Airbus */
+#include <exam_segment.h>
 #include <debug.h>
-#include <segmem.h>
 #include <info.h>
 
 extern info_t *info;
 
+tss_t *    TSS;
 seg_desc_t GDT[6];
-tss_t      TSS;
 
 #define gdt_flat_dsc(_dSc_,_pVl_,_tYp_)                                 \
    ({                                                                   \
@@ -37,11 +37,38 @@ tss_t      TSS;
 #define c3_dsc(_d) gdt_flat_dsc(_d,3,SEG_DESC_CODE_XR)
 #define d3_dsc(_d) gdt_flat_dsc(_d,3,SEG_DESC_DATA_RW)
 
+void display_gdt(void)
+{
+  gdt_reg_t gdtr;
+  get_gdtr(gdtr);
+
+  int i = 0;
+  seg_desc_t *begin;
+  begin = (seg_desc_t *)gdtr.desc;
+  while (begin <= (seg_desc_t *)gdtr.desc + gdtr.limit / sizeof(seg_desc_t))
+  {
+    uint32_t addr = (begin->base_1) | (begin->base_2 << 16) | (begin->base_3 << 24);
+    uint32_t lim = (begin->limit_1) | (begin->limit_2 << 16);
+    if (begin->g)
+    {
+      lim += 1;
+      lim *= 4096;
+      lim -= 1;
+    }
+    debug(
+        "Segment %d : Adresse : [0x%x - 0x%x] : Type de descripteur: %d\n",
+        i, addr, lim, begin->type);
+    begin++;
+    i++;
+  }
+}
+
+// Faire une fonction ici pour modif TSS (quand on change de task ?)
+
 void init_gdt()
 {
    gdt_reg_t gdtr;
-
-   GDT[0].raw = NULL;
+   GDT[0].raw = 0ULL;
 
    c0_dsc( &GDT[c0_idx] );
    d0_dsc( &GDT[d0_idx] );
@@ -59,4 +86,9 @@ void init_gdt()
    set_es(d0_sel);
    set_fs(d0_sel);
    set_gs(d0_sel);
+
+   TSS->s0.esp = get_ebp();
+   TSS->s0.ss  = d0_sel;
+   tss_dsc(&GDT[ts_idx], (offset_t)&TSS);
+   set_tr(ts_sel);
 }
