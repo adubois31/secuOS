@@ -82,6 +82,9 @@ void syscall_isr()
 
 void init_user()
 {
+
+   // Mise en place GDT et TSS
+
    gdt_reg_t gdtr;
 
    GDT[0].raw = 0ULL;
@@ -105,6 +108,8 @@ void init_user()
    tss_dsc(&GDT[ts_idx], (offset_t)&TSS);
    set_tr(ts_sel);
 
+   //Mise en place interruption numero 48
+
    int_desc_t *dsc;
    idt_reg_t  idtr;
    uint32_t   ustack = 0x600000;
@@ -116,6 +121,8 @@ void init_user()
    dsc->offset_1 = (uint16_t)((uint32_t)syscall_isr);
    dsc->offset_2 = (uint16_t)(((uint32_t)syscall_isr)>>16);
 
+
+   //Code sale
    asm volatile (
       "push %0 \n" // ss
       "push %1 \n" // esp

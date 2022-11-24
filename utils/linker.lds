@@ -10,7 +10,7 @@ PHDRS
    phstack PT_LOAD FLAGS (6);
    phsetup PT_LOAD FLAGS (7);
 }
-
+/* AJOUTER SECTION .user!! */
 SECTIONS
 {
    . = 0x300000;

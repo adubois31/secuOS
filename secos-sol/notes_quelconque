@@ -1,0 +1,7 @@
+asm volatile ("[code assembleur]":
+              "[operande output]": // "=r"(var en c)
+              "[operande input]":
+              "[Liste de reg qui seront changés par le code]")
+
+cette instruction : cr3_reg_t cr3 = {.raw = get_cr3()};
+Veut dire : cr3.raw = get_cr3() (init et affectation de structure)
