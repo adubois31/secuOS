@@ -27,4 +27,9 @@ SECTIONS
    /DISCARD/ : { *(.note* .indent .comment)      } : phsetup
 
    __kernel_end__ = .;
+   
+   /* __kernel_end__ = 0x3060b0, on se met loin de quoi être large */
+
+   . = 0x400000 ;
+   .user    : { *(.user)  } 
 }

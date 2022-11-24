@@ -6,6 +6,7 @@
 
 extern info_t *info;
 
+
 void show_cr3()
 {
    cr3_reg_t cr3 = {.raw = get_cr3()};
