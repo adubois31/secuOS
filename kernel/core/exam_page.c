@@ -67,6 +67,8 @@ void identity_init()
    enable_paging();
    display_pgd(pgd_user2);
 
+   pg_set_entry();
+
    // ----------
 
    // debug("PTB[1] = %p\n", (void*)ptbs_user1[0][0].raw);
