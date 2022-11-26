@@ -65,36 +65,21 @@ void identity_init()
 
    set_cr3(pgd_kernel);
    enable_paging();
-   display_pgd(pgd_user2);
 
-   pg_set_entry();
+   pg_set_entry(pgd_user1, PG_KRN | PG_RW, 0xfff);
 
-   // ----------
+   int pgd_index = pd32_idx(shared_mem);
+   int ptb_index = pt32_idx(shared_mem);
 
-   // debug("PTB[1] = %p\n", (void*)ptbs_user1[0][0].raw);
+   // Adress, RW,
+   pg_set_entry(&ptbs_user1[1023 * 1024 + 1021], PG_KRN | PG_RW, 1021 + (1023 << 10));
+   pg_set_entry(&ptbs_user2[1023 * 1024 + 1023], PG_KRN | PG_RW, 1023 + (1023 << 10));
 
-   // pte32_t  *ptb3    = (pte32_t*)0x603000;
-   // uint32_t *target  = (uint32_t*)0xc0000000;
-   // int      pgd_idx = pd32_idx(target);
-   // int      ptb_idx = pt32_idx(target);
+   debug("PGDuser1[0] = %p | target = %p\n", (void *)pgd_user1[0].raw, (void *)*shared_mem);
+   debug("PGDuser2[0] = %p | target = %p\n", (void *)pgd_user2[0].raw, (void *)*shared_mem);
 
-   // memset((void*)ptb3, 0, PAGE_SIZE);
-   // pg_set_entry(&ptb3[ptb_idx], PG_KRN|PG_RW, page_nr(pgd));
-   // pg_set_entry(&pgd[pgd_idx], PG_KRN|PG_RW, page_nr(ptb3));
-
-   // debug("PGD[0] = %p | target = %p\n", (void*)pgd[0].raw, (void*)*target);
-
-   // char *v1 = (char*)0x700000;
-   // char *v2 = (char*)0x7ff000;
-
-   // ptb_idx = pt32_idx(v1);
-   // pg_set_entry(&ptb2[ptb_idx], PG_KRN|PG_RW, 2);
-
-   // ptb_idx = pt32_idx(v2);
-   // pg_set_entry(&ptb2[ptb_idx], PG_KRN|PG_RW, 2);
-
-   // debug("%p = %s | %p = %s\n", (void*)v1, v1, (void*)v2, v2);
-
-   // *target = 0;
-   // display_pgd();
+   *shared_mem = 0;
+   debug("%p = %d | %p = %d\n", (void *)v1, *v1, (void *)v2, *v2);
+   *shared_mem = 3;
+   debug("%p = %d | %p = %d\n", (void *)v1, *v1, (void *)v2, *v2);
 }
