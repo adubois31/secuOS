@@ -51,9 +51,9 @@ void init_pages(pde32_t *pgd, pte32_t *ptb, int lvl)
 void identity_init()
 {
 
-   pde32_t *pgd_kernel = (pde32_t *)0x600000; // taille PGD  = 0x400
-   pde32_t *pgd_user1 = (pde32_t *)0x601000;
-   pde32_t *pgd_user2 = (pde32_t *)0x602000;
+   pde32_t *pgd_kernel = (pde32_t *)address_PGD_kernel;
+   pde32_t *pgd_user1 = (pde32_t *)address_PGD_usr1;
+   pde32_t *pgd_user2 = (pde32_t *)address_PGD_usr2;
 
    pte32_t *ptbs_kernel = (pte32_t *)0xf00000; // taille PTBS = 0x100000
    pte32_t *ptbs_user1 = (pte32_t *)0xb00000;

@@ -33,6 +33,6 @@ void tp()
     debug("---Display GDT---\n");
     display_gdt();
     
-    debug("---Initialisation Pages---\n");
-    identity_init();
+    // debug("---Initialisation Pages---\n");
+    // identity_init();
 }
