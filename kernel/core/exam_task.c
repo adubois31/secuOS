@@ -8,8 +8,7 @@ __attribute__((section(".user1"))) void user1(){
 }
 
 __attribute__((section(".user2"))) void user2(){
-    while (true){
-        
+    while (true){   
     }
 }
 
