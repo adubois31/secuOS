@@ -35,33 +35,18 @@ void init_pages(pde32_t* pgd, pte32_t* ptb, int lvl){
    for (uint32_t i_pgd=0;i_pgd<PDE32_PER_PD;i_pgd++){
 
       memset((void*)pgd, 0, PAGE_SIZE);
-      pg_set_entry(pgd, lvl|PG_RW, page_nr(ptb[i_pgd]));
+      pg_set_entry(&pgd[i_pgd], lvl|PG_RW, page_nr(&ptb[i_pgd]));
 
       for (uint32_t i_ptb=0;i_ptb<PTE32_PER_PT;i_ptb++){
-         memset((void*)ptb[i_pgd], 0, PAGE_SIZE);
-         pg_set_entry(&ptb[i_pgd], lvl|PG_RW, i+1024);
+         memset((void*)&ptb[i_pgd], 0, PAGE_SIZE);
+         pg_set_entry(&ptb[i_pgd], lvl|PG_RW, i_ptb+1024);
       } 
   }
 }
 
 void identity_init()
 {
-   // int      i;
-   // pde32_t *pgd = (pde32_t*)0x600000;
-   // pte32_t *ptb = (pte32_t*)0x601000;
-
-   // for(i=0;i<1024;i++)
-   //    pg_set_entry(&ptb[i], PG_KRN|PG_RW, i);
-
-   // memset((void*)pgd, 0, PAGE_SIZE);
-   // pg_set_entry(&pgd[0], PG_KRN|PG_RW, page_nr(ptb));
-
-   // pte32_t *ptb2 = (pte32_t*)0x602000;
-   // for(i=0;i<1024;i++)
-   //    pg_set_entry(&ptb2[i], PG_KRN|PG_RW, i+1024);
-
-   // pg_set_entry(&pgd[1], PG_KRN|PG_RW, page_nr(ptb2));
-
+   enable_paging();
 
    pde32_t *pgd_kernel  = (pde32_t*)0x600000; // taille PGD  = 0x400
    pde32_t *pgd_user1   = (pde32_t*)0x601000;
@@ -75,12 +60,12 @@ void identity_init()
    init_pages(pgd_user1,  ptbs_user1,  PG_USR);
    init_pages(pgd_user2,  ptbs_user2,  PG_USR);
 
-   set_cr3((uint32_t)pgd);
-   enable_paging();
-   
+   set_cr3(pgd_kernel);
    display_pgd();
 
-   // debug("PTB[1] = %p\n", (void*)ptb[1].raw);
+   // ----------
+
+   // debug("PTB[1] = %p\n", (void*)ptbs_user1[0][0].raw);
 
    // pte32_t  *ptb3    = (pte32_t*)0x603000;
    // uint32_t *target  = (uint32_t*)0xc0000000;
@@ -105,5 +90,5 @@ void identity_init()
    // debug("%p = %s | %p = %s\n", (void*)v1, v1, (void*)v2, v2);
 
    // *target = 0;
-   display_pgd();
+   // display_pgd();
 }
