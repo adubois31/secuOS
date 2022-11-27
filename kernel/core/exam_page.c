@@ -9,21 +9,20 @@ void display_pte(pte32_t *pte, uint32_t offset)
    {
       if (pte[i].addr > 0)
       {
-         printf("-- (%d) : Virtuelle : 0x%x -> Physique : 0x%x\n", i, (i | (offset << 10)) << 12, pte[i].addr << 12);
+         printf("-- (%d) : Virtuelle : %p -> Physique : %p\n", i, (void*)((i | (offset << 10)) << 12),  (void*)(pte[i].addr << 12));
       }
    }
 }
 
 void display_pgd(pde32_t *pgd)
 {
-   debug("---Display PGD---\n");
-   printf("Address PGD : %p\n", (void *)pgd);
+   printf("---Display PGD %p --- \n", (void *)pgd);
 
    for (uint32_t i = 0; i < PDE32_PER_PD; i++)
    {
       if (pgd[i].addr > 0)
       {
-         printf("- Index : %d Address PTB : 0x%x\n", i, pgd[i].addr << 12);
+         printf("- Index : %d Address PTB : %p\n", i, (void*)(pgd[i].addr << 12));
          display_pte((pte32_t *)(pgd[i].addr << 12), i);
       }
    }
@@ -35,56 +34,54 @@ void enable_paging()
    set_cr0(cr0 | CR0_PG);
 }
 
-void init_pages(pde32_t *pgd, pte32_t *ptb, int lvl)
+pte32_t* shiftPTB(pte32_t *ptb, int offsetPTB){
+   return (pte32_t *)((void*)ptb + sizePTB*offsetPTB);
+}
+
+void init_pgd(pde32_t *pgd, pte32_t *ptb, int lvl)
 {
-   memset((void *)pgd, 0, PAGE_SIZE);
-   for (uint32_t i_pgd = 0; i_pgd < 3; i_pgd++)
-   {
-      pg_set_entry(&pgd[i_pgd], lvl | PG_RW, page_nr(&ptb[i_pgd * PTE32_PER_PT]));
-      for (uint32_t i_ptb = 0; i_ptb < PTE32_PER_PT; i_ptb++)
-      {
-         pg_set_entry(&ptb[i_ptb + i_pgd * PTE32_PER_PT], lvl | PG_RW, i_ptb + i_pgd * 1024);
-      }
+   for (uint32_t i_pgd = 0; i_pgd < 6; i_pgd++){
+      pg_set_entry(&pgd[i_pgd], lvl | PG_RW, (int)shiftPTB(ptb,i_pgd)>>12);
    }
 }
 
-void identity_init()
+void init_ptb(pte32_t *ptb, int offsetPTB, int offsetPhy, int lvl){
+   for (int i = 0; i<1024; i++){
+      pg_set_entry(&shiftPTB(ptb,offsetPTB)[i], (PG_RW | lvl), i + 1024*offsetPhy);
+   }
+}
+
+void page_init()
 {
 
-   pde32_t *pgd_kernel = (pde32_t *)address_PGD_kernel;
-   pde32_t *pgd_user1 = (pde32_t *)address_PGD_usr1;
-   pde32_t *pgd_user2 = (pde32_t *)address_PGD_usr2;
+   pde32_t *pgd_kernel = address_PGD_kernel;
+   pde32_t *pgd_user1  = address_PGD_usr1;
+   pde32_t *pgd_user2  = address_PGD_usr2;
 
-   pte32_t *ptbs_kernel = (pte32_t *)0x800000; // taille PTBS = 0x100000
-   pte32_t *ptbs_user1 = (pte32_t *)0x1200000;
-   pte32_t *ptbs_user2 = (pte32_t *)0x1600000;
-   init_pages(pgd_kernel, ptbs_kernel, PG_KRN);
-   init_pages(pgd_user1, ptbs_user1, PG_USR);
-   init_pages(pgd_user2, ptbs_user2, PG_USR);
+   pte32_t *ptbs_kernel = addresss_PTBS_kernel; 
+   pte32_t *ptbs_user1  = addresss_PTBS_usr1;
+   pte32_t *ptbs_user2  = addresss_PTBS_usr2;
 
-   // display_pgd(pgd_user2);
+   int shm_ptb_idx;
 
-   uint32_t *test_shm = (uint32_t *)0x10000000;
-   // debug("Offset pgd : %d\n", (int)pd32_idx(test_shm));
-   // debug("Offset ptb : %d\n", (int)pt32_idx(test_shm));
+   init_pgd(pgd_kernel, ptbs_kernel, PG_KRN);
+   init_ptb(ptbs_kernel, 0, 0, PG_KRN); // Kernell stack ()
+   init_ptb(ptbs_kernel, 1, 1, PG_KRN); // De la place pour la shm entre autre
 
-   // debug("Page number pgd : %d\n", (int)page_nr((int)pd32_idx(test_shm)));
-   // debug("Page number ptb : %d\n", (int)page_nr((int)pt32_idx(test_shm)));
+   init_pgd(pgd_user1, ptbs_user1, PG_USR);
+   init_ptb(ptbs_user1, 0, 0, PG_USR); // Kernell stack
+   init_ptb(ptbs_user1, 2, 2, PG_USR); // User1   stack
+   shm_ptb_idx = (shm_vir_user1)>>12 & 0x3FF;   // SHM
+   pg_set_entry(&shiftPTB(ptbs_user1,2)[shm_ptb_idx], (PG_RW | PG_USR), (int)(shm_phy)>>12);
 
-   pg_set_entry(&pgd_user1[1], PG_KRN | PG_RW, 0);
-   pg_set_entry(&pgd_user1[2], PG_KRN | PG_RW, page_nr(test_shm));
+   init_pgd(pgd_user2, ptbs_user2, PG_USR);
+   init_ptb(ptbs_user2, 0, 0, PG_USR); // Kernell stack
+   init_ptb(ptbs_user2, 3, 3, PG_USR); // User2   stack
+   shm_ptb_idx = (shm_vir_user2)>>12 & 0x3FF; // SHM
+   pg_set_entry(&shiftPTB(ptbs_user2,3)[shm_ptb_idx], (PG_RW | PG_USR), (int)(shm_phy)>>12);
 
-   pg_set_entry(&pgd_user2[0], PG_KRN | PG_RW, 0);
-   pg_set_entry(&pgd_user2[2], PG_KRN | PG_RW, page_nr(test_shm));
-
-   *test_shm = 6;
+   display_pgd(pgd_user2);
+   
    set_cr3(pgd_user1);
    enable_paging();
-
-   uint32_t *v1 = (uint32_t *)0x010200;
-   // // uint32_t *v2 = (uint32_t *)0x000200;
-   // set_cr3(pgd_user1);
-   debug("@v1 : %p , valeur v1 : %d\n", v1, *v1);
-   // set_cr3(pgd_user2);
-   // debug("@v2 : %p , valeur v2 : %d\n", v2, *v2);
 }

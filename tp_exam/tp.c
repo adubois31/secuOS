@@ -38,5 +38,5 @@ void tp()
     display_gdt();
 
     debug("---Initialisation Pages---\n");
-    identity_init();
+    page_init();
 }

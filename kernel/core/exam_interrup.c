@@ -1,6 +1,7 @@
 #include <exam_interrup.h>
 #include <segmem.h>
 #include <intr.h>
+#include <debug.h>
 
 #include <exam_segment.h>
 
