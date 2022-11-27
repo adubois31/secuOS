@@ -55,31 +55,36 @@ void identity_init()
    pde32_t *pgd_user1 = (pde32_t *)address_PGD_usr1;
    pde32_t *pgd_user2 = (pde32_t *)address_PGD_usr2;
 
-   pte32_t *ptbs_kernel = (pte32_t *)0xf00000; // taille PTBS = 0x100000
-   pte32_t *ptbs_user1 = (pte32_t *)0xb00000;
-   pte32_t *ptbs_user2 = (pte32_t *)0x900000;
-
+   pte32_t *ptbs_kernel = (pte32_t *)0x800000; // taille PTBS = 0x100000
+   pte32_t *ptbs_user1 = (pte32_t *)0x1200000;
+   pte32_t *ptbs_user2 = (pte32_t *)0x1600000;
    init_pages(pgd_kernel, ptbs_kernel, PG_KRN);
    init_pages(pgd_user1, ptbs_user1, PG_USR);
    init_pages(pgd_user2, ptbs_user2, PG_USR);
 
-   set_cr3(pgd_kernel);
+   // display_pgd(pgd_user2);
+
+   uint32_t *test_shm = (uint32_t *)0x10000000;
+   // debug("Offset pgd : %d\n", (int)pd32_idx(test_shm));
+   // debug("Offset ptb : %d\n", (int)pt32_idx(test_shm));
+
+   // debug("Page number pgd : %d\n", (int)page_nr((int)pd32_idx(test_shm)));
+   // debug("Page number ptb : %d\n", (int)page_nr((int)pt32_idx(test_shm)));
+
+   pg_set_entry(&pgd_user1[1], PG_KRN | PG_RW, 0);
+   pg_set_entry(&pgd_user1[2], PG_KRN | PG_RW, page_nr(test_shm));
+
+   pg_set_entry(&pgd_user2[0], PG_KRN | PG_RW, 0);
+   pg_set_entry(&pgd_user2[2], PG_KRN | PG_RW, page_nr(test_shm));
+
+   *test_shm = 6;
+   set_cr3(pgd_user1);
    enable_paging();
 
-   pg_set_entry(pgd_user1, PG_KRN | PG_RW, 0xfff);
-
-   int pgd_index = pd32_idx(shared_mem);
-   int ptb_index = pt32_idx(shared_mem);
-
-   // Adress, RW,
-   pg_set_entry(&ptbs_user1[1023 * 1024 + 1021], PG_KRN | PG_RW, 1021 + (1023 << 10));
-   pg_set_entry(&ptbs_user2[1023 * 1024 + 1023], PG_KRN | PG_RW, 1023 + (1023 << 10));
-
-   debug("PGDuser1[0] = %p | target = %p\n", (void *)pgd_user1[0].raw, (void *)*shared_mem);
-   debug("PGDuser2[0] = %p | target = %p\n", (void *)pgd_user2[0].raw, (void *)*shared_mem);
-
-   *shared_mem = 0;
-   debug("%p = %d | %p = %d\n", (void *)v1, *v1, (void *)v2, *v2);
-   *shared_mem = 3;
-   debug("%p = %d | %p = %d\n", (void *)v1, *v1, (void *)v2, *v2);
+   uint32_t *v1 = (uint32_t *)0x010200;
+   // // uint32_t *v2 = (uint32_t *)0x000200;
+   // set_cr3(pgd_user1);
+   debug("@v1 : %p , valeur v1 : %d\n", v1, *v1);
+   // set_cr3(pgd_user2);
+   // debug("@v2 : %p , valeur v2 : %d\n", v2, *v2);
 }
