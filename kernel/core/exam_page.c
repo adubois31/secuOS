@@ -38,7 +38,7 @@ void enable_paging()
 void init_pages(pde32_t *pgd, pte32_t *ptb, int lvl)
 {
    memset((void *)pgd, 0, PAGE_SIZE);
-   for (uint32_t i_pgd = 0; i_pgd < PDE32_PER_PD; i_pgd++)
+   for (uint32_t i_pgd = 0; i_pgd < 3; i_pgd++)
    {
       pg_set_entry(&pgd[i_pgd], lvl | PG_RW, page_nr(&ptb[i_pgd * PTE32_PER_PT]));
       for (uint32_t i_ptb = 0; i_ptb < PTE32_PER_PT; i_ptb++)
