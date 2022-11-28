@@ -28,8 +28,14 @@ SECTIONS
 
    __kernel_end__ = .;
    
-   /* __kernel_end__ = 0x3060b0, on se met loin de quoi être large */
+   /* __kernel_end__ = 0x3060b0 */
 
-   . = 0x400000 ;
-   .user    : { *(.user)  } 
+   . = 0x400000;
+   .sys_counter : { KEEP(*(.sys_counter)) . = ALIGN(4);     } : phsetup
+
+   . = 0x800000;
+   .user1     : { KEEP(*(.user1)) . = ALIGN(4);     } : phsetup
+
+   . = 0xc00000;
+   .user2     : { KEEP(*(.user2)) . = ALIGN(4);     } : phsetup
 }

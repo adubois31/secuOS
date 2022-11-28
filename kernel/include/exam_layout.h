@@ -12,7 +12,7 @@
 #define addresss_PTBS_usr2   (pte32_t *)0x220000
 
 #define shm_phy       0x600000
-#define shm_vir_user1 0x800000
-#define shm_vir_user2 0xc00000
+#define shm_vir_user1 0x805000 // on décale un peu du début car y'a les fonctions qui sont stockés
+#define shm_vir_user2 0xc05000
 
 #endif

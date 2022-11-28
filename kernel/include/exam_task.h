@@ -4,6 +4,7 @@
 #include <cr.h>
 #include <pagemem.h>
 #include <types.h>
+#include <exam_layout.h>
 
 #define NB_TASKS 2
 #define INDEX_TASK_USER1 0

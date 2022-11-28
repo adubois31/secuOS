@@ -86,9 +86,11 @@ void page_init()
 
    display_pgd(pgd_user1);
 
-   *((uint32_t *)shm_phy) = 4;
+   *((uint32_t *)shm_phy) = 0;
 
    set_cr3(pgd_user1);
    enable_paging();
+
+   // test
    debug("@v1 : %x , valeur : %d\n", shm_vir_user1, *((uint32_t *)shm_vir_user1));
 }

@@ -7,7 +7,7 @@
 
 uint32_t *counter = (uint32_t *)0x10000; // Il faut que ce soit l'adresse de la shared mem
 
-void sys_counter(uint32_t *counter)
+void __attribute__((section(".sys_counter"))) sys_counter(uint32_t *counter)
 {
     asm volatile(
         "mov %0, %%eax  \n"
@@ -15,19 +15,19 @@ void sys_counter(uint32_t *counter)
 }
 
 // Incrémente
-__attribute__((section(".user"))) void user1()
+__attribute__((section(".user1"))) void user1()
 {
-    while (1)
-    {
+    uint32_t * counter = (uint32_t *) shm_vir_user1;
+    while (1){
         (*counter)++;
     }
 }
 
 // Display
-__attribute__((section(".user"))) void user2()
+__attribute__((section(".user2"))) void user2()
 {
-    while (1)
-    {
+    uint32_t * counter = (uint32_t *) shm_vir_user2;
+    while (1){
         sys_counter(counter);
     }
 }
