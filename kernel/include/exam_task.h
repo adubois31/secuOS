@@ -1,6 +1,5 @@
 #ifndef EXAM_TASK
 #define EXAM_TASK
-#include <exam_page.h>
 
 #define NB_TASKS 2
 #define INDEX_TASK_USER1 0
