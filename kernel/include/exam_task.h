@@ -1,10 +1,6 @@
 #ifndef EXAM_TASK
 #define EXAM_TASK
-#include <info.h>
-#include <cr.h>
-#include <pagemem.h>
-#include <types.h>
-#include <exam_layout.h>
+#include <exam_page.h>
 
 #define NB_TASKS 2
 #define INDEX_TASK_USER1 0
@@ -19,7 +15,7 @@ typedef struct
 
 task_t tasks[NB_TASKS];
 
-int current_task = 0;
+int current_task_index = 0;
 
 void __attribute__((section(".user"))) user1();
 void __attribute__((section(".user"))) user2();
