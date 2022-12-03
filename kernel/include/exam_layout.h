@@ -20,7 +20,7 @@
 
 // MEMOIRE USER 1
 
-#define shm_vir_user1 0x805000 
+#define shm_vir_user1 0x805000
 #define stack_user1 0x820000
 #define code_user1 0x920000
 

@@ -1,4 +1,5 @@
 #include <exam_page.h>
+#include <exam_layout.h>
 #include <debug.h>
 
 extern info_t *info;

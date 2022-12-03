@@ -3,7 +3,6 @@
 #include <info.h>
 #include <cr.h>
 #include <pagemem.h>
-#include <types.h>
 
 // Appel syst / interface user
 void __attribute__((section(".sys_counter"))) sys_counter(uint32_t *counter)
@@ -35,6 +34,7 @@ __attribute__((section(".user"))) void user2()
 
 void init_tasks()
 {
+    current_task_index = 0;
     uint32_t *counter = (uint32_t *)shm_phy;
     (*counter) = 0;
 

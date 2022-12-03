@@ -7,7 +7,8 @@ tss_t *TSS = (tss_t *)address_TSS;
 seg_desc_t GDT[6];
 
 extern info_t *info;
-
+tss_t *TSS;
+seg_desc_t GDT[6];
 #define gdt_flat_dsc(_dSc_, _pVl_, _tYp_) \
    ({                                     \
       (_dSc_)->raw = 0;                   \

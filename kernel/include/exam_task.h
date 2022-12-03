@@ -12,9 +12,8 @@ typedef struct
     uint32_t pgd;
 } task_t;
 
-task_t tasks[NB_TASKS];
-
-int current_task_index = 0;
+extern task_t tasks[NB_TASKS];
+extern int current_task_index;
 
 void __attribute__((section(".user"))) user1();
 void __attribute__((section(".user"))) user2();
