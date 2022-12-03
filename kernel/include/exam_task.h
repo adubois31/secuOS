@@ -8,11 +8,6 @@
 #define NB_TASKS 2
 #define INDEX_TASK_USER1 0
 #define INDEX_TASK_USER2 1
-
-task_t tasks[NB_TASKS];
-
-int current_task = 0;
-
 typedef struct
 {
     uint32_t eip;
@@ -20,6 +15,10 @@ typedef struct
     uint32_t esp_user;
     uint32_t pgd;
 } task_t;
+
+task_t tasks[NB_TASKS];
+
+int current_task = 0;
 
 void __attribute__((section(".user"))) user1();
 void __attribute__((section(".user"))) user2();

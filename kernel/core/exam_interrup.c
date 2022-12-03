@@ -39,6 +39,7 @@ __attribute__((naked)) void kernel_handler()
 // Syscall pour changer de task
 __attribute__((naked)) void user_handler()
 {
+    /*
     // Affecter ces variables avec quelque chose
     task_t *task = &task[current_task];
     tss_t *tss;
@@ -50,4 +51,5 @@ __attribute__((naked)) void user_handler()
     asm volatile("add $8, %esp"); // skip int number end error code
     asm volatile("iret");
     // AU secours
+    */
 }
