@@ -4,6 +4,8 @@
 
 #include <exam_segment.h>
 #include <exam_page.h>
+#include <exam_task.h>
+#include <exam_interrup.h>
 
 extern info_t *info;
 extern uint32_t __kernel_start__;
@@ -15,28 +17,26 @@ void show_info()
     multiboot_memory_map_t *start;
     multiboot_memory_map_t *end;
 
-    mbi = info->mbi;
-    start = (multiboot_memory_map_t *)mbi->mmap_addr;
-    end = (multiboot_memory_map_t *)(mbi->mmap_addr + mbi->mmap_length);
-
-    while (start < end)
-    {
-        debug("mmap 0x%llx - 0x%llx (%d)\n",
-              start->addr, start->addr + start->len, start->type);
-        start++;
-    }
-
     debug("kernel mem [0x%x - 0x%x]\n", (uint32_t)&__kernel_start__, (uint32_t)&__kernel_end__);
-    debug("MBI flags 0x%x\n", mbi->flags);
-}
+    debug("MBI flags 0x%x\n\n", info->mbi->flags);
 
-void tp()
-{
     debug("---Initialisation GDT---\n");
     init_gdt();
-    debug("---Display GDT---\n");
-    display_gdt();
+    // debug("---Display GDT---\n");
+    // display_gdt();
 
     debug("---Initialisation Pages---\n");
     page_init();
+    // debug("---Display PDG User1---\n");
+    // display_pgd(address_PGD_usr1);
+
+    debug("---Initialisation Interruptions---\n");
+    init_all_interrup();
+
+    debug("---Initialisation Tâches---\n");
+    init_tasks();
+
+    while (1)
+    {
+    }
 }

@@ -85,13 +85,7 @@ void page_init()
    shm_ptb_idx = pt32_idx(shm_vir_user2); // SHM
    pg_set_entry(&shiftPTB(ptbs_user2, 3)[shm_ptb_idx], (PG_RW | PG_USR), (int)(shm_phy) >> 12);
 
-   display_pgd(pgd_user1);
-
    *((uint32_t *)shm_phy) = 0;
-
    set_cr3(pgd_user1);
    enable_paging();
-
-   // test
-   debug("@v1 : %x , valeur : %d\n", shm_vir_user1, *((uint32_t *)shm_vir_user1));
 }

@@ -3,9 +3,7 @@
 #include <cr.h>
 #include <info.h>
 
-void init_kernel_interrup();
-void init_user_interrup();
-
+void init_all_interrup();
 void kernel_handler();
 void user_handler();
 
