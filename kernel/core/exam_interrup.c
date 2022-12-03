@@ -1,6 +1,7 @@
 #include <exam_interrup.h>
 #include <exam_segment.h>
 #include <exam_task.h>
+#include <exam_layout.h>
 #include <intr.h>
 #include <debug.h>
 #include <exam_task.h>
@@ -41,9 +42,6 @@ __attribute__((naked)) void kernel_handler()
 // Syscall pour changer de task
 __attribute__((naked)) void user_handler()
 {
-    extern int current_task_index;
-    extern task_t *task;
-
     current_task_index = (current_task_index + 1) % 2;
     // Affecter ces variables avec quelque chose
     task = &tasks[current_task_index];

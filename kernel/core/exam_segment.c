@@ -1,5 +1,6 @@
 /* GPLv2 (c) Airbus */
 #include <exam_segment.h>
+#include <exam_layout.h>
 #include <debug.h>
 #include <info.h>
 
