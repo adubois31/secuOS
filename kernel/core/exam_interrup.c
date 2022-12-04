@@ -12,8 +12,9 @@ extern task_t tasks[NB_TASKS];
 
 // Syscall pour afficher la valeur du compteur
 // Interface Noyau
-__attribute__((naked)) void kernel_handler()
+__attribute__((naked)) __regparm__(1) void kernel_handler(int_ctx_t ctx)
 {
+    debug("ctx : %x\n", ctx.gpr.eax.raw);
     uint32_t counter;
     asm volatile(
         "mov %%eax, %0  \n"
@@ -25,22 +26,32 @@ __attribute__((naked)) void kernel_handler()
 }
 
 // Syscall pour changer de task
-__attribute__((naked)) void user_handler()
+__attribute__((naked)) __regparm__(1) void user_handler(uint32_t ctx)
 {
-    task_t *task = &tasks[current_task_index];
+    debug("Changement de task\n");
+    task_t *task;
 
     // Sauvegarder contexte ?
-
+    tasks[current_task_index].esp_kernel = ctx;
+    asm volatile("mov (%%esp), %0"
+                 : "=r"(tasks[current_task_index].esp_kernel));
     current_task_index = (current_task_index + 1) % 2;
+    asm volatile("mov %0, %%esp" ::"r"(tasks[current_task_index].esp_kernel));
     task = &tasks[current_task_index];
 
     TSS->s0.esp = task->esp_kernel;
+    TSS->eip = task->eip;
+
+    debug("Set esp\n");
     set_esp(task->esp_kernel);
+    debug("Set cr3\n");
     set_cr3(task->pgd);
 
     asm volatile("popa");
     asm volatile("add $8, %esp"); // skip int number end error code
     asm volatile("iret");
+
+    debug("Fin changement de task\n");
 }
 
 void init_interrup(int num_inter, int privilege, offset_t handler)

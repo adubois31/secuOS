@@ -4,7 +4,7 @@
 #include <info.h>
 
 void init_all_interrup();
-void kernel_handler();
-void user_handler();
+__regparm__(1) void kernel_handler();
+__regparm__(1) void user_handler();
 
 #endif

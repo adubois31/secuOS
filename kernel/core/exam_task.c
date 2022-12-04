@@ -5,6 +5,9 @@
 #include <pagemem.h>
 #include <debug.h>
 
+task_t tasks[NB_TASKS];
+int current_task_index;
+
 // Appel syst / interface user
 void __attribute__((section(".sys_counter"))) sys_counter(uint32_t *counter)
 {
@@ -35,6 +38,7 @@ __attribute__((section(".user"))) void user2()
 
 void init_tasks()
 {
+    current_task_index = 0;
     // Initialisation tache 1
     task_t *task1 = &tasks[INDEX_TASK_USER1];
     task1->eip = (uint32_t)user1;
