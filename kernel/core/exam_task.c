@@ -11,7 +11,9 @@ int current_task_index;
 // Appel syst / interface user
 void sys_counter(uint32_t *counter)
 {
-    asm volatile("int $80"::"S"(counter));
+    asm volatile(
+        "mov %0,%%eax\n"
+        "int $80" ::"r"(*counter));
 }
 
 // Incrémente
@@ -21,6 +23,7 @@ __attribute__((section(".user"))) void user1()
     uint32_t *counter = (uint32_t *)shm_vir_user1;
     while (1)
     {
+        debug("counter : %d\n", *counter);
         (*counter)++;
     }
 }

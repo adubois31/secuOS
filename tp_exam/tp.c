@@ -29,8 +29,6 @@ void show_info()
     // while (1)
     // {
     // }
-    // debug("---Display PDG User1---\n");
-    // display_pgd(address_PGD_usr1);
 
     debug("---Initialisation Interruptions---\n");
     init_all_interrup();
