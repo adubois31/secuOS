@@ -5,9 +5,11 @@
 
 // MEMOIRE KERNEL
 
-#define address_PGD_kernel (pde32_t *)0x100000 // taille PGD  = 0x400
-#define address_PGD_usr1 (pde32_t *)0x101000
-#define address_PGD_usr2 (pde32_t *)0x102000
+#define address_TSS 0x100000
+
+#define address_PGD_kernel (pde32_t *)0x101000 // taille PGD  = 0x400
+#define address_PGD_usr1 (pde32_t *)0x102000
+#define address_PGD_usr2 (pde32_t *)0x103000
 
 #define addresss_PTBS_kernel (pte32_t *)0x200000 // taille 1 ptb = 0x1000 or on en a 2 pour chaque
 #define addresss_PTBS_usr1 (pte32_t *)0x210000

@@ -7,6 +7,7 @@
 #include <exam_page.h>
 #include <exam_task.h>
 #include <exam_interrup.h>
+#include <asm.h>
 
 extern info_t *info;
 extern uint32_t __kernel_start__;

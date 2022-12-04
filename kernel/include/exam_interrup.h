@@ -1,6 +1,7 @@
 #ifndef EXAM_INTERRUP
 #define EXAM_INTERRUP
 #include <cr.h>
+#include <intr.h>
 #include <info.h>
 #include <types.h>
 #include <intr.h>

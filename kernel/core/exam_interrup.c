@@ -26,6 +26,7 @@ __attribute__((naked)) __regparm__(1) void kernel_handler(int_ctx_t *ctx)
 // Syscall pour changer de task
 __attribute__((naked)) __regparm__(1) void user_handler(int_ctx_t *ctx)
 {
+<<<<<<< HEAD
     debug("In scheduler with index of current task : %d\n", current_task_index);
 
     debug("Changement de task\n");
@@ -44,8 +45,24 @@ __attribute__((naked)) __regparm__(1) void user_handler(int_ctx_t *ctx)
         current_task_index = (current_task_index + 1) % 2;
         asm volatile("mov %0, %%esp" ::"r"(tasks[current_task_index].esp_kernel));
     }
+=======
+    set_ds(d3_sel);
+    set_es(d3_sel);
+    set_fs(d3_sel);
+    set_gs(d3_sel);
+
+    task_t *task = &tasks[current_task_index];
+
+    // Sauvegarder contexte ?
+    asm volatile(
+        "mov (%%esp), %0      \n"
+        "mov (%%ebp), %1      \n"
+        "mov 4(%%ebp), %2     \n"
+        : "=r"(task->esp_kernel), "=r"(task->ebp), "=r"(task->eip));
+>>>>>>> CA ME SAOUL
 
     task = &tasks[current_task_index];
+<<<<<<< HEAD
     debug("Set esp, esp_kernel user : %x\n", task->esp_kernel);
     debug("esp_user user : %x\n", task->esp_user);
     set_esp(task->esp_kernel);
@@ -68,6 +85,30 @@ __attribute__((naked)) __regparm__(1) void user_handler(int_ctx_t *ctx)
         "r"(task->esp_user),
         "i"(c3_sel),
         "b"((void *)task->eip));
+=======
+
+    asm volatile(
+        "mov %0, (%%esp)      \n"
+        "mov %1, (%%ebp)      \n"
+        :: "r"(task->esp_kernel), "r"(task->ebp));
+    
+    TSS->s0.esp = task->esp_kernel;
+    // set_esp(task->esp_kernel);
+    set_cr3(task->pgd);
+
+    asm volatile(
+        "push %0          \n" 
+        "push %1          \n" 
+        "pushf            \n"
+        "push %2          \n"
+        "push %%ebx       \n"
+        "iret             \n"
+        ::"i"(d3_sel), "r"(task->esp_user),"i"(c3_sel),"b"((void*)task->eip));
+
+    // asm volatile("popa");     
+    // asm volatile("add $8, %esp"); // skip int number end error code
+    // asm volatile("iret");
+>>>>>>> CA ME SAOUL
 }
 
 void init_interrup(int num_inter, int privilege, offset_t handler)
