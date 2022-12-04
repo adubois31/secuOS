@@ -13,10 +13,10 @@
 #define addresss_PTBS_usr1 (pte32_t *)0x210000
 #define addresss_PTBS_usr2 (pte32_t *)0x220000
 
-#define stack_kernel_user1 0x405000
+#define stack_kernel_user1 0xa05000
 #define stack_kernel_user2 0x505000
 #define shm_phy 0x600000
-#define address_TSS 0x700000
+#define address_TSS 0x350000
 
 // MEMOIRE USER 1
 

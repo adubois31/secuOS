@@ -30,9 +30,6 @@ SECTIONS
    
    /* __kernel_end__ = 0x3060b0 */
 
-   . = 0x400000;
-   .sys_counter : { KEEP(*(.sys_counter)) . = ALIGN(4);     } : phsetup
-
    . = 0x800000;
    .user1     : { KEEP(*(.user1)) . = ALIGN(4);     } : phsetup
 

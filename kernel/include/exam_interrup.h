@@ -2,9 +2,10 @@
 #define EXAM_INTERRUP
 #include <cr.h>
 #include <info.h>
+#include <types.h>
+#include <intr.h>
 
 void init_all_interrup();
-__regparm__(1) void kernel_handler();
-__regparm__(1) void user_handler();
-
+void user_handler(int_ctx_t *) __regparm__(1);
+void kernel_handler(int_ctx_t *ctx) __regparm__(1);
 #endif

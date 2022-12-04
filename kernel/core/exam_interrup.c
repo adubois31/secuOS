@@ -2,19 +2,17 @@
 #include <exam_segment.h>
 #include <exam_task.h>
 #include <exam_layout.h>
-#include <intr.h>
 #include <debug.h>
 #include <exam_task.h>
 
-extern tss_t *TSS;
 extern int current_task_index;
 extern task_t tasks[NB_TASKS];
 
 // Syscall pour afficher la valeur du compteur
 // Interface Noyau
-__attribute__((naked)) __regparm__(1) void kernel_handler(int_ctx_t ctx)
+__attribute__((naked)) __regparm__(1) void kernel_handler(int_ctx_t *ctx)
 {
-    debug("ctx : %x\n", ctx.gpr.eax.raw);
+    debug("ctx : %x\n", ctx->gpr.eax.raw);
     uint32_t counter;
     asm volatile(
         "mov %%eax, %0  \n"
@@ -26,32 +24,50 @@ __attribute__((naked)) __regparm__(1) void kernel_handler(int_ctx_t ctx)
 }
 
 // Syscall pour changer de task
-__attribute__((naked)) __regparm__(1) void user_handler(uint32_t ctx)
+__attribute__((naked)) __regparm__(1) void user_handler(int_ctx_t *ctx)
 {
+    debug("In scheduler with index of current task : %d\n", current_task_index);
+
     debug("Changement de task\n");
     task_t *task;
 
-    // Sauvegarder contexte ?
-    tasks[current_task_index].esp_kernel = ctx;
-    asm volatile("mov (%%esp), %0"
-                 : "=r"(tasks[current_task_index].esp_kernel));
-    current_task_index = (current_task_index + 1) % 2;
-    asm volatile("mov %0, %%esp" ::"r"(tasks[current_task_index].esp_kernel));
-    task = &tasks[current_task_index];
+    if (current_task_index == -1)
+    {
+        current_task_index = 1;
+    }
+    else
+    {
+        // Sauvegarder contexte ?
+        tasks[current_task_index].esp_kernel = (uint32_t)ctx;
+        asm volatile("mov (%%esp), %0"
+                     : "=r"(tasks[current_task_index].esp_kernel));
+        current_task_index = (current_task_index + 1) % 2;
+        asm volatile("mov %0, %%esp" ::"r"(tasks[current_task_index].esp_kernel));
+    }
 
+    task = &tasks[current_task_index];
+    debug("Set esp, esp_kernel user : %x\n", task->esp_kernel);
+    debug("esp_user user : %x\n", task->esp_user);
+    set_esp(task->esp_kernel);
+
+    tss_t *TSS = (tss_t *)address_TSS;
     TSS->s0.esp = task->esp_kernel;
+    TSS->s0.ss = gdt_krn_seg_sel(1);
     TSS->eip = task->eip;
 
-    debug("Set esp\n");
-    set_esp(task->esp_kernel);
     debug("Set cr3\n");
     set_cr3(task->pgd);
 
-    asm volatile("popa");
-    asm volatile("add $8, %esp"); // skip int number end error code
-    asm volatile("iret");
-
-    debug("Fin changement de task\n");
+    asm volatile(
+        "push %0          \n"
+        "push %%ebp       \n"
+        "pushf            \n"
+        "push %2          \n"
+        "push %%ebx       \n"
+        "iret             \n" ::"i"(d3_sel),
+        "r"(task->esp_user),
+        "i"(c3_sel),
+        "b"((void *)task->eip));
 }
 
 void init_interrup(int num_inter, int privilege, offset_t handler)

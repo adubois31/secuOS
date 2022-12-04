@@ -9,7 +9,7 @@ task_t tasks[NB_TASKS];
 int current_task_index;
 
 // Appel syst / interface user
-void __attribute__((section(".sys_counter"))) sys_counter(uint32_t *counter)
+void sys_counter(uint32_t *counter)
 {
     asm volatile(
         "mov %0, %%eax  \n"
@@ -19,6 +19,7 @@ void __attribute__((section(".sys_counter"))) sys_counter(uint32_t *counter)
 // Incrémente
 __attribute__((section(".user"))) void user1()
 {
+    debug("In user1\n");
     uint32_t *counter = (uint32_t *)shm_vir_user1;
     while (1)
     {
@@ -38,7 +39,7 @@ __attribute__((section(".user"))) void user2()
 
 void init_tasks()
 {
-    current_task_index = 0;
+    current_task_index = -1;
     // Initialisation tache 1
     task_t *task1 = &tasks[INDEX_TASK_USER1];
     task1->eip = (uint32_t)user1;

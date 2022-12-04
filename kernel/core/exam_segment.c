@@ -5,7 +5,7 @@
 #include <info.h>
 
 extern info_t *info;
-tss_t *TSS;
+tss_t *TSS = (tss_t *)address_TSS;
 seg_desc_t GDT[6];
 #define gdt_flat_dsc(_dSc_, _pVl_, _tYp_) \
    ({                                     \
@@ -88,6 +88,6 @@ void init_gdt()
 
    TSS->s0.esp = get_ebp();
    TSS->s0.ss = d0_sel;
-   tss_dsc(&GDT[ts_idx], (offset_t)&TSS);
+   tss_dsc(&GDT[ts_idx], (offset_t)TSS);
    set_tr(ts_sel);
 }
