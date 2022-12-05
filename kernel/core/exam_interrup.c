@@ -19,7 +19,7 @@ __attribute__((naked)) __regparm__(1) void kernel_handler(int_ctx_t *ctx)
         : "=r"(counter));
     debug("counter : %d\n", counter);
     debug("%x\n", ctx->gpr.eax.raw);
-    asm volatile("popa;leave;iret");
+    asm volatile("popa;iret");
 }
 
 // Syscall pour changer de task
