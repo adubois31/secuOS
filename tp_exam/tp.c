@@ -18,14 +18,13 @@ void tp()
 
     debug("kernel mem [0x%x - 0x%x]\n", (uint32_t)&__kernel_start__, (uint32_t)&__kernel_end__);
     debug("MBI flags 0x%x\n\n", info->mbi->flags);
+    // uint32_t *shm = (uint32_t *)shm_phy;
+    // *shm = 0;
 
     debug("---Initialisation GDT---\n");
     init_gdt();
     // debug("---Display GDT---\n");
     // display_gdt();
-    // while (1)
-    // {
-    // }
 
     debug("---Initialisation Interruptions---\n");
     init_all_interrup();
@@ -39,17 +38,18 @@ void tp()
     // debug("---Display PGD User1---\n");
     // display_pgd(address_PGD_usr1);
 
-    // force_interrupts_on();
-
+    asm volatile ("sti");
+    force_interrupts_on();
     
-    uint32_t *var = (uint32_t *)0x890000;
+    uint32_t *var = (uint32_t *)0x805000;
     *var = 78;
     sys_counter(var);
-
+    
+    asm volatile("int $32");
+    asm volatile("int $32");
     asm volatile("int $32");
     // asm volatile("int $80");
 
-    while (1)
-    {
+    while (1){
     }
 }

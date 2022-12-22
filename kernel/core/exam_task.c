@@ -19,11 +19,10 @@ void sys_counter(uint32_t *counter)
 // Incrémente
 __attribute__((section(".user"))) void user1()
 {
-    debug("In user1\n");
     uint32_t *counter = (uint32_t *)shm_vir_user1;
+    *counter = 0;
     while (1)
     {
-        debug("counter : %d\n", *counter);
         (*counter)++;
     }
 }
