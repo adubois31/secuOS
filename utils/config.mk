@@ -38,7 +38,8 @@ core_obj   :=	entry.o \
 		exam_interrup.o \
 		exam_page.o     \
 		exam_segment.o  \
-		exam_task.o 
+		exam_task.o \
+		syscall.o
 
 objects    := $(addprefix $(CORE), $(core_obj))
 

@@ -38,7 +38,34 @@ void show_info()
 
     debug("---Initialisation Pages---\n");
     page_init();
-    force_interrupts_on();
+
+    // debug("---Display PGD User1---\n");
+    // display_pgd(address_PGD_usr1);
+
+    // uint32_t *var = (uint32_t *)0x890000;
+    // *var = 78;
+    // sys_counter(var);
+
+    // asm volatile("int $32");
+    // asm volatile("int $80");
+    current_task_index = 0;
+    task_t *task = &tasks[current_task_index];
+    set_cr3(task->pgd);
+    asm volatile(
+        "push %0          \n"
+        "push %1          \n"
+        "pushf            \n"
+        "pop %%eax        \n"
+        "or $0x200, %%eax\n"
+        "push %%eax\n"
+        "push %2          \n"
+        "push %%ebx       \n" ::"i"(d3_sel),
+        "r"(task->esp_user),
+        "i"(c3_sel),
+        "b"((void *)task->eip));
+    asm volatile("iret");
+    // force_interrupts_on();
+
     while (1)
     {
     }

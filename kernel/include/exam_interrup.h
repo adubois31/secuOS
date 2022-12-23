@@ -7,6 +7,6 @@
 #include <intr.h>
 
 void init_all_interrup();
-void user_handler(int_ctx_t *) __regparm__(1);
-void kernel_handler(int_ctx_t *ctx) __regparm__(1);
+void user_handler(int_ctx_t *ctx) __regparm__(1);
+void kernel_handler();
 #endif
