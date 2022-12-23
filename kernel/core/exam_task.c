@@ -47,6 +47,7 @@ void init_tasks()
     task1->pgd = (uint32_t)address_PGD_usr1;
     task1->esp_kernel = (uint32_t)stack_kernel_user1;
     task1->esp_user = (uint32_t)stack_user1;
+    task1->state = 0
 
     // Initialisation tache 2
     task_t *task2 = &tasks[INDEX_TASK_USER2];
@@ -54,4 +55,5 @@ void init_tasks()
     task2->pgd = (uint32_t)address_PGD_usr2;
     task2->esp_kernel = (uint32_t)stack_kernel_user2;
     task2->esp_user = (uint32_t)stack_user2;
+    task2->state = 0
 }
