@@ -3,7 +3,6 @@
 #include <info.h>
 #include <cr.h>
 #include <pagemem.h>
-#include <debug.h>
 
 task_t tasks[NB_TASKS];
 int current_task_index;
@@ -14,17 +13,14 @@ void sys_counter(uint32_t *counter)
     asm volatile(
         "mov %0,%%eax\n"
         "int $80" ::"r"(*counter));
-    // debug("Counter : %d\n", *counter);
 }
 
 // Incrémente
 __attribute__((section(".user1"))) void user1()
 {
-    debug("In user1\n");
     uint32_t *counter = (uint32_t *)shm_vir_user1;
     while (1)
     {
-        // debug("User 1 counter : %d\n", *counter);
         (*counter)++;
     }
 }
@@ -32,11 +28,9 @@ __attribute__((section(".user1"))) void user1()
 // Display
 __attribute__((section(".user2"))) void user2()
 {
-    debug("In user2\n");
     uint32_t *counter = (uint32_t *)shm_vir_user2;
     while (1)
     {
-        debug("User 2\n");
         sys_counter(counter);
     }
 }

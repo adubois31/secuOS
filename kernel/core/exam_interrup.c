@@ -19,7 +19,6 @@ void kernel_handler()
         "mov %%eax, %0  \n"
         : "=r"(counter));
     debug("Counter : %d\n", counter);
-    // debug("Appel kernel_handler\n");
 }
 
 // Syscall pour changer de task
@@ -28,10 +27,7 @@ __regparm__(1) void user_handler(int_ctx_t *ctx)
     debug("Interruption 32 appelé\n");
     debug("In scheduler with index of current task : %d\n", current_task_index);
 
-    debug("Changement de task\n");
     task_t *task;
-
-    // Passage ring 0->3
 
     task = &tasks[current_task_index];
     if (task->state == 0)
@@ -47,9 +43,6 @@ __regparm__(1) void user_handler(int_ctx_t *ctx)
         *ctx = task->ctx_task;
     }
     current_task_index = (current_task_index + 1) % 2;
-    // tss_t *TSS = (tss_t *)address_TSS;
-    // TSS->s0.esp = task->esp_kernel;
-    // set_esp(task->esp_kernel);
     set_cr3(task->pgd);
 }
 
