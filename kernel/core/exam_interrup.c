@@ -19,6 +19,7 @@ void kernel_handler()
         "mov %%eax, %0  \n"
         : "=r"(counter));
     debug("Counter : %d\n", counter);
+    asm volatile("popa");
 }
 
 // Syscall pour changer de task
@@ -59,6 +60,6 @@ void init_interrup(int num_inter, int privilege, offset_t handler)
 
 void init_all_interrup()
 {
-    // init_interrup(32, 0, (offset_t)user_handler);
+    // init_interrup(32, 0, (offset_t)user_handler); L'interruption 32 est traité dans intr.c à cause de problèmes.
     init_interrup(80, 3, (offset_t)user_intr);
 }

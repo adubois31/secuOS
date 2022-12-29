@@ -13,6 +13,7 @@ void sys_counter(uint32_t *counter)
     asm volatile(
         "mov %0,%%eax\n"
         "int $80" ::"r"(*counter));
+    for(int i=0;i<1000000;i++);
 }
 
 // Incrémente
@@ -22,6 +23,7 @@ __attribute__((section(".user1"))) void user1()
     while (1)
     {
         (*counter)++;
+        for(int i=0;i<1000000;i++);
     }
 }
 
