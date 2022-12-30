@@ -7,6 +7,9 @@
 .globl idt_trampoline
 .type  idt_trampoline,"function"
 
+.globl user_intr
+.type user_intr,"function"
+
 
 /*
 ** send end-of-interrupt to PIC
@@ -46,6 +49,12 @@ resume_from_intr:
         popa
         add     $8, %esp
         iret
+
+user_intr:
+        pusha
+        call kernel_handler
+        popa
+        iret   
 
 /*
 ** IDT handlers

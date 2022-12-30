@@ -70,11 +70,11 @@ void page_init()
    int shm_ptb_idx;
 
    init_pgd(pgd_kernel, ptbs_kernel, PG_KRN);
-   init_ptb(ptbs_kernel, 0, 0, PG_KRN); // Kernell stack ()
+   init_ptb(ptbs_kernel, 0, 0, PG_KRN); // Kernel stack ()
    init_ptb(ptbs_kernel, 1, 1, PG_KRN); // De la place pour la shm entre autre
 
    init_pgd(pgd_user1, ptbs_user1, PG_USR);
-   init_ptb(ptbs_user1, 0, 0, PG_USR);    // Kernell stack
+   init_ptb(ptbs_user1, 0, 0, PG_USR);    // Kernel stack
    init_ptb(ptbs_user1, 2, 2, PG_USR);    // User1   stack
    shm_ptb_idx = pt32_idx(shm_vir_user1); // SHM
    pg_set_entry(&shiftPTB(ptbs_user1, 2)[shm_ptb_idx], (PG_RW | PG_USR), (int)(shm_phy) >> 12);

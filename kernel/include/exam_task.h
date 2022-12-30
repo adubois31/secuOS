@@ -10,7 +10,6 @@
 typedef struct
 {
     uint32_t eip;
-    uint32_t ebp;
     uint32_t esp_kernel;
     uint32_t esp_user;
     uint32_t pgd;
