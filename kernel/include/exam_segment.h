@@ -3,7 +3,6 @@
 
 #include <string.h>
 #include <segmem.h>
-#include <exam_layout.h>
 
 #define c0_idx 1
 #define d0_idx 2
@@ -17,7 +16,7 @@
 #define d3_sel gdt_usr_seg_sel(d3_idx)
 #define ts_sel gdt_krn_seg_sel(ts_idx)
 
+
 void display_gdt(void);
 void init_gdt();
-
 #endif

@@ -3,7 +3,6 @@
 #include <exam_task.h>
 #include <exam_layout.h>
 #include <debug.h>
-#include <exam_task.h>
 
 extern int current_task_index;
 extern task_t tasks[NB_TASKS];
