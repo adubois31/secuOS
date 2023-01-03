@@ -7,17 +7,13 @@
 #include <exam_page.h>
 #include <exam_task.h>
 #include <exam_interrup.h>
-#include <asm.h>
 
 extern info_t *info;
 extern uint32_t __kernel_start__;
 extern uint32_t __kernel_end__;
 
-void show_info()
+void tp()
 {
-    mbi_t *mbi;
-    multiboot_memory_map_t *start;
-    multiboot_memory_map_t *end;
 
     debug("kernel mem [0x%x - 0x%x]\n", (uint32_t)&__kernel_start__, (uint32_t)&__kernel_end__);
     debug("MBI flags 0x%x\n\n", info->mbi->flags);

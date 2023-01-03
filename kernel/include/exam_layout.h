@@ -18,7 +18,6 @@
 #define stack_kernel_user1 0x270000
 #define stack_kernel_user2 0x290000
 #define shm_phy 0x600000
-#define address_TSS 0x350000
 
 // MEMOIRE USER 1
 
